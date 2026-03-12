@@ -40,6 +40,12 @@ struct Territorio {
 // Funções de lógica principal do jogo:
 // Função utilitária:
 
+// --- Função para limpar o buffer de entrada ---
+void limparBufferEntrada() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 // --- Função Principal (main) ---
 // Função principal que orquestra o fluxo do jogo, chamando as outras funções em ordem.
 int main() {
@@ -50,6 +56,9 @@ int main() {
     // - Preenche os territórios com seus dados iniciais (tropas, donos, etc.).
     // - Define a cor do jogador e sorteia sua missão secreta.
 
+    struct Territorio war[MAX_TERRITORIOS] = {0}; // inicializa tudo vazio
+    int totalTerritorios = 0;
+    int opcao;
     // 2. Laço Principal do Jogo (Game Loop):
     // - Roda em um loop 'do-while' que continua até o jogador sair (opção 0) ou vencer.
     // - A cada iteração, exibe o mapa, a missão e o menu de ações.
@@ -59,9 +68,96 @@ int main() {
     //   - Opção 0: Encerra o jogo.
     // - Pausa a execução para que o jogador possa ler os resultados antes da próxima rodada.
 
+    do {
+
+        printf("==========================\n");
+        printf("      WAR - PARTE 1\n");
+        printf("==========================\n");
+        printf("1 - Cadastrar novo territorio\n");
+        printf("2 - Listar todos os territorios\n");
+        printf("0 - Sair\n");
+
+        scanf("%d", &opcao);
+        limparBufferEntrada(); // Limpa o buffer para evitar problemas com scanf e getchar
+
+        switch (opcao) {
+
+        case 1:
+
+            printf("--- Cadastro de Novo Territorio ---\n\n");
+            
+            if (totalTerritorios < MAX_TERRITORIOS) {
+
+                printf("Digite o nome do Territorio: ");
+                fgets(war[totalTerritorios].nome, TAM_NOME, stdin);
+
+                war[totalTerritorios].nome[strcspn(war[totalTerritorios].nome, "\n")] = '\0';
+
+                // verifica se nome foi digitado
+                if (strlen(war[totalTerritorios].nome) == 0) {
+                    printf("Nome invalido! Cadastro cancelado.\n");
+                    break;
+                }
+
+                printf("Digite a cor do Exercito: ");
+                fgets(war[totalTerritorios].cor, TAM_COR, stdin);
+                war[totalTerritorios].cor[strcspn(war[totalTerritorios].cor, "\n")] = '\0';
+
+                printf("Digite o numero de tropas: ");
+                scanf("%d", &war[totalTerritorios].tropas);
+                limparBufferEntrada();
+
+                totalTerritorios++; // só incrementa depois do cadastro completo
+
+                printf("Territorio cadastrado com sucesso!\n");
+
+            } else {
+                printf("Limite de territorios atingido!\n");
+            }
+
+            printf("\nPressione Enter para continuar...");
+            getchar();
+            break;
+
+        case 2:
+
+            printf("--- Lista de Territorios Cadastrados ---\n\n");
+
+            if (totalTerritorios == 0) {
+                printf("Nenhum territorio cadastrado ainda.\n");
+            } else {
+
+                for (int i = 0; i < totalTerritorios; i++) {
+
+                    printf("--------------------------\n");
+                    printf("Territorio %d:\n", i + 1);
+                    printf("Nome: %s\n", war[i].nome);
+                    printf("Cor do Exercito: %s\n", war[i].cor);
+                    printf("Numero de Tropas: %d\n", war[i].tropas);
+                }
+
+                printf("--------------------------\n");
+            }
+
+            printf("\nPressione Enter para continuar...");
+            getchar();
+            break;
+        
+        case 0:
+            printf("\nSaindo do programa. Obrigado por jogar!\n");
+            break;
+
+        default:
+            printf("\nOpcao invalida!\n");
+            printf("\nPressione Enter para continuar...");
+            getchar();
+            break;
+            
+        }
+    } while (opcao != 0);
+
     // 3. Limpeza:
     // - Ao final do jogo, libera a memória alocada para o mapa para evitar vazamentos de memória.
-
     return 0;
 }
 
